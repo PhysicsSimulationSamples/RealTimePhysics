@@ -22,11 +22,15 @@
         precision highp float;
         precision highp int;
 
-        layout(location = POSITION_LOCATION) in vec2 pos;
+        uniform mat4 u_model;
+        uniform mat4 u_viewProj;
+
+        layout(location = POSITION_LOCATION) in vec3 a_position;
 
         void main()
         {
-            gl_Position = vec4(pos + vec2(-0.5, 0.0), 0.0, 1.0);
+            vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
+            gl_Position = position;
         }
     </script>
 
@@ -44,6 +48,11 @@
     </script>
 
     <script src="utility.js"></script>
+    <script src="third-party/gl-matrix-min.js"></script>
+    <script src="renderer/shaderProg.js"></script>
+    <script src="scene/camera.js"></script>
+    <script src="geometry/box.js"></script>
+    <script src="fluid/fluid_particle.js"></script>
     <script>
     (function () {
         'use strict';
@@ -62,42 +71,37 @@
             return;
         }
 
-        // -- Init Program
-        var program = createProgram(gl, getShaderSource('vs'), getShaderSource('fs'));
-        gl.useProgram(program);
+       // -- Init program
+        var prog = new ShaderProgram(gl, 'vs', 'fs');
+        
+        // -- Init objects
+        var box = new Box(gl);
+        box.create(gl);
 
-        // -- Init Buffer
-        var vertices = new Float32Array([
-            -0.3, -0.5,
-             0.3, -0.5,
-             0.0,  0.5
-        ]);
-        var vertexPosBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        // -- Init camera
+        var camera = new Camera();
+        var radx = 0.0020; // yaw
+        var rady = 0.0010; // pitch
+        var radz = 0.0005; // roll
+        render();
 
-        // -- Init Vertex Array
-        var vertexArray = gl.createVertexArray();
-        gl.bindVertexArray(vertexArray);
+        function render() {
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.enable(gl.DEPTH_TEST);
+            gl.enable(gl.CULL_FACE);
+            gl.cullFace(gl.BACK);
+            box.rotate(radx, rady, radz);
+            prog.draw(gl, box, camera.viewProj);
+            requestAnimationFrame(render);
+        }
 
-        var vertexPosLocation = 0;  // set with GLSL layout qualifier
-        gl.enableVertexAttribArray(vertexPosLocation);
-        gl.vertexAttribPointer(vertexPosLocation, 2, gl.FLOAT, false, 0, 0);
-
-        gl.bindVertexArray(null);
-
-        // -- Render
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.bindVertexArray(vertexArray);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-        // -- Delete WebGL resources
-        gl.deleteBuffer(vertexPosBuffer);
-        gl.deleteProgram(program);
-        gl.deleteVertexArray(vertexArray);
+        function cleanup() {
+            // Delete WebGL resources
+            gl.deleteBuffer(vertexBuffer);
+            gl.deleteBuffer(indexBuffer);
+            gl.deleteProgram(program);
+        }
     })();
     </script>
     <div id="highlightedLines"  style="display: none">#L98</div>
