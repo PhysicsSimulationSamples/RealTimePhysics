@@ -51,6 +51,7 @@
     <script src="third-party/gl-matrix-min.js"></script>
     <script src="renderer/shaderProg.js"></script>
     <script src="scene/camera.js"></script>
+    <script src="geometry/geo_common.js"></script>
     <script src="geometry/box.js"></script>
     <script src="fluid/fluid_particle.js"></script>
     <script>
@@ -76,7 +77,7 @@
         
         // -- Init objects
         var box = new Box(gl);
-        box.create(gl);
+        box.create(gl, gl.LINES);
 
         // -- Init camera
         var camera = new Camera();

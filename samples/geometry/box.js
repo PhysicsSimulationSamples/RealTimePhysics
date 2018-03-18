@@ -3,10 +3,16 @@
 
 var Box = function(gl) {
 
-    this.drawMode = 2;
+    this.drawMode = gl.TRIANGLES;
 
     // -- Local space position
 
+    //    6 --- 5
+    //  2 --- 3 |
+    //  | |   | |
+    //  | 7 --|-4
+    //  1 --- 0 
+    //
     this.positions = new Float32Array([
       // Front face
       -1.0, -1.0,  1.0,
@@ -26,23 +32,23 @@ var Box = function(gl) {
        1.0,  1.0,  1.0,
        1.0,  1.0, -1.0,
 
-      // // Bottom face
-      // -1.0, -1.0, -1.0,
-      //  1.0, -1.0, -1.0,
-      //  1.0, -1.0,  1.0,
-      // -1.0, -1.0,  1.0,
+      // Bottom face
+      -1.0, -1.0, -1.0,
+       1.0, -1.0, -1.0,
+       1.0, -1.0,  1.0,
+      -1.0, -1.0,  1.0,
 
-      // // Right face
-      //  1.0, -1.0, -1.0,
-      //  1.0,  1.0, -1.0,
-      //  1.0,  1.0,  1.0,
-      //  1.0, -1.0,  1.0,
+      // Right face
+       1.0, -1.0, -1.0,
+       1.0,  1.0, -1.0,
+       1.0,  1.0,  1.0,
+       1.0, -1.0,  1.0,
 
-      // // Left face
-      // -1.0, -1.0, -1.0,
-      // -1.0, -1.0,  1.0,
-      // -1.0,  1.0,  1.0,
-      // -1.0,  1.0, -1.0
+      // Left face
+      -1.0, -1.0, -1.0,
+      -1.0, -1.0,  1.0,
+      -1.0,  1.0,  1.0,
+      -1.0,  1.0, -1.0
     ]);
 
     // @todo: fill up
@@ -69,11 +75,23 @@ var Box = function(gl) {
         20, 21, 22,     20, 22, 23    // left
     ]);
 
-    this.indicesLine = new Uint16Array([
-        0, 1, 1, 2, 2, 3, 3, 0,
-        4, 5, 5, 6, 6, 7, 7, 4,
-        3, 5, 2, 6, 0, 4, 1, 7       
+    this.indicesWireframe = new Uint16Array([
+        0, 1, 1, 2, 2, 3, 3, 0,       // front
+        4, 5, 5, 6, 6, 7, 7, 4,       // back
+        3, 5, 2, 6, 0, 4, 1, 7        // side     
     ]);
+
+    this.getIdxCount = function() {
+        switch (this.drawMode)
+        {
+          case gl.LINES:
+            return this.indicesWireframe.length;
+          case gl.TRIANGLES:
+            return this.indices.length;
+          default:
+            return -1;
+        }
+    }
 
     // -- GL Buffers
 
@@ -100,7 +118,9 @@ var Box = function(gl) {
 
 
     // -- Create function. Must call during intialization
-    this.create = function(gl) {
+    this.create = function(gl, drawMode = gl.TRIANGLES) {
+
+        this.drawMode = drawMode;
 
         // Position buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
@@ -110,7 +130,17 @@ var Box = function(gl) {
 
         // Element buffer
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indicesLine, gl.STATIC_DRAW);
+
+        switch (this.drawMode)
+        {
+          case gl.LINES:
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indicesWireframe, gl.STATIC_DRAW);
+            break;
+          case gl.TRIANGLES:
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.STATIC_DRAW);
+            break;
+        }
+        
 
     }
 }
