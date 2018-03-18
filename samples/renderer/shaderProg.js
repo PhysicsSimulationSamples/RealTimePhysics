@@ -25,4 +25,23 @@ var ShaderProgram = function(gl, vertSource, fragSource) {
 
         gl.drawElements(geo.drawMode, geo.getIdxCount(), gl.UNSIGNED_SHORT, 0);
     }
+
+    this.drawPoints = function(gl, emitter, viewProj) {
+        gl.useProgram(this.program);
+
+        // // Set uniforms
+        gl.uniformMatrix4fv(this.unifViewProj, false, viewProj);
+
+        // Set attributes
+        gl.enableVertexAttribArray(this.attribPosition);
+        gl.bindBuffer(gl.ARRAY_BUFFER, emitter.points.posBuffer);
+        gl.vertexAttribPointer(this.attribPosition, 3, gl.FLOAT, false, 0, 0);
+
+        gl.BindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+		gl.BufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		gl.BufferSubData(GL_ARRAY_BUFFER, 0, ParticlesCount * sizeof(GLfloat) * 4, g_particule_position_size_data);
+
+        gl.drawArraysInstanced(emitter.points.drawMode, 0, 3, emitter.numParticles);
+    }
 }
+

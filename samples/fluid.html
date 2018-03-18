@@ -31,6 +31,7 @@
         {
             vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
             gl_Position = position;
+            gl_PointSize = 2.0;
         }
     </script>
 
@@ -53,6 +54,7 @@
     <script src="scene/camera.js"></script>
     <script src="geometry/geo_common.js"></script>
     <script src="geometry/box.js"></script>
+    <script src="geometry/point.js"></script>
     <script src="fluid/fluid_particle.js"></script>
     <script>
     (function () {
@@ -79,6 +81,8 @@
         var box = new Box(gl);
         box.create(gl, gl.LINES);
 
+        var particleEmitter = new FluidEmitter(gl);
+
         // -- Init camera
         var camera = new Camera();
         var radx = 0.0020; // yaw
@@ -92,8 +96,9 @@
             gl.enable(gl.DEPTH_TEST);
             gl.enable(gl.CULL_FACE);
             gl.cullFace(gl.BACK);
-            box.rotate(radx, rady, radz);
+            // box.rotate(radx, rady, radz);
             prog.draw(gl, box, camera.viewProj);
+            prog.drawPoints(gl, particleEmitter, camera.viewProj);
             requestAnimationFrame(render);
         }
 
