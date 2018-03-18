@@ -1,0 +1,32 @@
+{
+    "name": "real-time-physhics-samples",
+    "version": "0.0.0",
+    "description": "Short and easy to understand samples demonstrating real time physics features.",
+    "license": "MIT",
+    "contributors": {
+        "name": "Trung Le, Akshay",
+        "url": "https://github.com/PhysicsSimulationSamples/RealTimePhysics/graphs/contributors"
+    },
+    "keywords": [
+        "WebGL"
+    ],
+    "homepage": "https://github.com/PhysicsSimulationSamples/RealTimePhysics",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:https://github.com/PhysicsSimulationSamples/RealTimePhysics.git"
+    },
+    "bugs": {
+        "url": "https://github.com/PhysicsSimulationSamples/RealTimePhysics/issues"
+    },
+    "scripts": {
+        "jsHint": "gulp jsHint",
+        "jsHint-watch": "gulp jsHint-watch",
+        "test" : "npm run jsHint"
+    },
+    "devDependencies": {
+        "gulp": "3.9.0",
+        "gulp-jshint": "2.0.0",
+        "jshint": "2.8.0",
+        "jshint-stylish": "2.1.0"
+    }
+}
