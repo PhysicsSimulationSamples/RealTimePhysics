@@ -16,7 +16,7 @@ var FluidEmitter = function(gl) {
 		var particle = new FluidParticle();
 		particle.position = vec3.create(0, i, 0);
 		this.positions[i*3 + 0] = 0;
-		this.positions[i*3 + 1] = i;
+		this.positions[i*3 + 1] = -5 + i * 0.1;
 		this.positions[i*3 + 2] = 0;
 		this.particles.push(particle);
 	}

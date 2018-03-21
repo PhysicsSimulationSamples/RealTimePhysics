@@ -6,6 +6,7 @@ var Points = function(gl, positions) {
     this.drawMode = gl.POINTS;
 
     this.vertexData = new Float32Array([0,0,0]);
+    this.positions = new Float32Array();
     this.positions = positions;
 
     this.normals = new Float32Array([
@@ -39,8 +40,7 @@ var Points = function(gl, positions) {
         gl.bufferData(gl.ARRAY_BUFFER, this.vertexData, gl.STATIC_DRAW);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.positions, gl.STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-        gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.positions.length, this.positions);
+        gl.bufferData(gl.ARRAY_BUFFER, 3 * 1000000, gl.STREAM_DRAW);
 
     }
 }
